@@ -35,6 +35,10 @@ lazy_static::lazy_static! {
             ("Tesla T4".to_string(), 2560),
             ("Quadro M5000".to_string(), 2048),
 
+            ("GeForce RTX 3090".to_string(), 10496),
+            ("GeForce RTX 3080".to_string(), 8704),
+            ("GeForce RTX 3070".to_string(), 5888),
+
             ("GeForce RTX 2080 Ti".to_string(), 4352),
             ("GeForce RTX 2080 SUPER".to_string(), 3072),
             ("GeForce RTX 2080".to_string(), 2944),
@@ -42,6 +46,9 @@ lazy_static::lazy_static! {
 
             ("GeForce GTX 1080 Ti".to_string(), 3584),
             ("GeForce GTX 1080".to_string(), 2560),
+            ("GeForce GTX 980".to_string(), 2048),
+            ("GeForce GTX 1070".to_string(), 1920),
+
             ("GeForce GTX 2060".to_string(), 1920),
             ("GeForce GTX 1660 Ti".to_string(), 1536),
             ("GeForce GTX 1060".to_string(), 1280),
