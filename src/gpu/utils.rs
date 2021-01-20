@@ -24,19 +24,37 @@ lazy_static::lazy_static! {
             ("GeForce RTX 3090".to_string(), 10496),
             ("GeForce RTX 3080".to_string(), 8704),
             ("GeForce RTX 3070".to_string(), 5888),
+            ("GeForce RTX 3060 Ti".to_string(), 4864),
 
+            ("GeForce Titan RTX".to_string(), 4608),
             ("GeForce RTX 2080 Ti".to_string(), 4352),
             ("GeForce RTX 2080 SUPER".to_string(), 3072),
             ("GeForce RTX 2080".to_string(), 2944),
             ("GeForce RTX 2070 SUPER".to_string(), 2560),
-
-            ("GeForce GTX 1080 Ti".to_string(), 3584),
-            ("GeForce GTX 1080".to_string(), 2560),
-            ("GeForce GTX 2060".to_string(), 1920),
+            ("GeForce RTX 2070".to_string(), 2304),
+            ("GeForce RTX 2060 SUPER".to_string(), 2176),
+            ("GeForce RTX 2060".to_string(), 1920),
             ("GeForce GTX 1660 Ti".to_string(), 1536),
-            ("GeForce GTX 1060".to_string(), 1280),
+            ("GeForce GTX 1660 SUPER".to_string(), 1408),
+            ("GeForce GTX 1660".to_string(), 1408),
             ("GeForce GTX 1650 SUPER".to_string(), 1280),
             ("GeForce GTX 1650".to_string(), 896),
+
+            ("GeForce Titan V".to_string(), 5120),
+            ("GeForce Titan Xp".to_string(), 3840),
+            ("GeForce Titan X".to_string(), 3584),
+            ("GeForce GTX 1080 Ti".to_string(), 3584),
+            ("GeForce GTX 1080".to_string(), 2560),
+            ("GeForce GTX 1070 Ti".to_string(), 2432),
+            ("GeForce GTX 1070".to_string(), 1920),
+            ("GeForce GTX 1060 6GB".to_string(), 1280),
+            
+            ("GeForce GTX Titan X".to_string(), 3072),
+            ("GeForce GTX 980 Ti".to_string(), 2816),
+            ("GeForce GTX 980".to_string(), 2048),
+
+            ("GeForce GTX Titan Z".to_string(), 5760),
+            ("GeForce GTX Titan Black".to_string(), 2880),
         ].into_iter().collect();
 
         match env::var("BELLMAN_CUSTOM_GPU").and_then(|var| {
