@@ -68,9 +68,9 @@ impl Drop for PriorityLock {
 use super::error::{GPUError, GPUResult};
 use super::fft::FFTKernel;
 use super::multiexp::MultiexpKernel;
+use crate::bls::Engine;
 use crate::domain::create_fft_kernel;
 use crate::multiexp::create_multiexp_kernel;
-use paired::Engine;
 
 macro_rules! locked_kernel {
     ($class:ident, $kern:ident, $func:ident, $name:expr) => {
@@ -116,6 +116,10 @@ macro_rules! locked_kernel {
             where
                 F: FnMut(&mut $kern<E>) -> GPUResult<R>,
             {
+                if std::env::var("BELLMAN_NO_GPU").is_ok() {
+                    return Err(GPUError::GPUDisabled);
+                }
+
                 self.init();
 
                 loop {

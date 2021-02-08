@@ -1,9 +1,9 @@
 use std::sync::Arc;
+use std::time::Instant;
 
+use crate::bls::Engine;
 use ff::{Field, PrimeField};
-use futures::Future;
 use groupy::{CurveAffine, CurveProjective};
-use paired::Engine;
 use rand_core::RngCore;
 use rayon::prelude::*;
 
@@ -304,6 +304,10 @@ where
         })
         .collect::<Result<Vec<_>, _>>()?;
 
+    // Start fft/multiexp prover timer
+    let start = Instant::now();
+    info!("starting proof timer");
+
     let worker = Worker::new();
     let input_len = provers[0].input_assignment.len();
     let vk = params.get_vk(input_len)?;
@@ -562,6 +566,9 @@ where
         )
         .collect::<Result<Vec<_>, SynthesisError>>()?;
 
+    let proof_time = start.elapsed();
+    info!("prover time: {:?}", proof_time);
+
     Ok(proofs)
 }
 
@@ -569,7 +576,7 @@ where
 mod tests {
     use super::*;
 
-    use paired::bls12_381::{Bls12, Fr};
+    use crate::bls::{Bls12, Fr};
     use rand::Rng;
     use rand_core::SeedableRng;
     use rand_xorshift::XorShiftRng;

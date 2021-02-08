@@ -1,5 +1,6 @@
 // Fp2 Extension Field where u^2 + 1 = 0
 
+#define FIELD2_LIMB_BITS FIELD_LIMB_BITS
 #define FIELD2_ZERO ((FIELD2){FIELD_ZERO, FIELD_ZERO})
 #define FIELD2_ONE ((FIELD2){FIELD_ONE, FIELD_ZERO})
 
@@ -34,9 +35,9 @@ FIELD2 FIELD2_double(FIELD2 a) {
  * c_1 = (a_0 * b_1 + a_1 * b_0) = (a_0 + a_1) * (b_0 + b_1) - a_0 * b_0 - a_1 * b_1
  */
 FIELD2 FIELD2_mul(FIELD2 a, FIELD2 b) {
-  FIELD aa = FIELD_mul(a.c0, b.c0);
-  FIELD bb = FIELD_mul(a.c1, b.c1);
-  FIELD o = FIELD_add(b.c0, b.c1);
+  const FIELD aa = FIELD_mul(a.c0, b.c0);
+  const FIELD bb = FIELD_mul(a.c1, b.c1);
+  const FIELD o = FIELD_add(b.c0, b.c1);
   a.c1 = FIELD_add(a.c1, a.c0);
   a.c1 = FIELD_mul(a.c1, o);
   a.c1 = FIELD_sub(a.c1, aa);
@@ -52,8 +53,8 @@ FIELD2 FIELD2_mul(FIELD2 a, FIELD2 b) {
  * c_1 = 2 * a_0 * a_1
  */
 FIELD2 FIELD2_sqr(FIELD2 a) {
-  FIELD ab = FIELD_mul(a.c0, a.c1);
-  FIELD c0c1 = FIELD_add(a.c0, a.c1);
+  const FIELD ab = FIELD_mul(a.c0, a.c1);
+  const FIELD c0c1 = FIELD_add(a.c0, a.c1);
   a.c0 = FIELD_mul(FIELD_sub(a.c0, a.c1), c0c1);
   a.c1 = FIELD_double(ab);
   return a;

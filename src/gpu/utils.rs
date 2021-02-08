@@ -1,31 +1,17 @@
-use crate::gpu::error::{GPUError, GPUResult};
-use ocl::{Device, Platform};
-
 use log::{info, warn};
+use rust_gpu_tools::*;
 use std::collections::HashMap;
 use std::env;
-
-pub const GPU_NVIDIA_PLATFORM_NAME: &str = "NVIDIA CUDA";
-// pub const CPU_INTEL_PLATFORM_NAME: &str = "Intel(R) CPU Runtime for OpenCL(TM) Applications";
-
-pub fn get_devices(platform_name: &str) -> GPUResult<Vec<Device>> {
-    if env::var("BELLMAN_NO_GPU").is_ok() {
-        return Err(GPUError::Simple("GPU accelerator is disabled!"));
-    }
-
-    let platform = Platform::list()?.into_iter().find(|&p| match p.name() {
-        Ok(p) => p == platform_name,
-        Err(_) => false,
-    });
-    match platform {
-        Some(p) => Ok(Device::list_all(p)?),
-        None => Err(GPUError::Simple("GPU platform not found!")),
-    }
-}
 
 lazy_static::lazy_static! {
     static ref CORE_COUNTS: HashMap<String, usize> = {
         let mut core_counts : HashMap<String, usize> = vec![
+            // AMD
+            ("gfx1010".to_string(), 2560),
+            // This value was chosen to give (approximately) empirically best performance for a Radeon Pro VII.
+            ("gfx906".to_string(), 7400),
+
+            // NVIDIA
             ("Quadro RTX 6000".to_string(), 4608),
 
             ("TITAN RTX".to_string(), 4608),
@@ -38,7 +24,9 @@ lazy_static::lazy_static! {
             ("GeForce RTX 3090".to_string(), 10496),
             ("GeForce RTX 3080".to_string(), 8704),
             ("GeForce RTX 3070".to_string(), 5888),
+            ("GeForce RTX 3060 Ti".to_string(), 4864),
 
+            ("GeForce Titan RTX".to_string(), 4608),
             ("GeForce RTX 2080 Ti".to_string(), 4352),
             ("GeForce RTX 2080 SUPER".to_string(), 3072),
             ("GeForce RTX 2080".to_string(), 2944),
@@ -50,10 +38,30 @@ lazy_static::lazy_static! {
             ("GeForce GTX 1070".to_string(), 1920),
 
             ("GeForce GTX 2060".to_string(), 1920),
+            ("GeForce RTX 2070".to_string(), 2304),
+            ("GeForce RTX 2060 SUPER".to_string(), 2176),
+
             ("GeForce GTX 1660 Ti".to_string(), 1536),
-            ("GeForce GTX 1060".to_string(), 1280),
+            ("GeForce GTX 1660 SUPER".to_string(), 1408),
+            ("GeForce GTX 1660".to_string(), 1408),
             ("GeForce GTX 1650 SUPER".to_string(), 1280),
             ("GeForce GTX 1650".to_string(), 896),
+
+            ("GeForce Titan V".to_string(), 5120),
+            ("GeForce Titan Xp".to_string(), 3840),
+            ("GeForce Titan X".to_string(), 3584),
+            ("GeForce GTX 1080 Ti".to_string(), 3584),
+            ("GeForce GTX 1080".to_string(), 2560),
+            ("GeForce GTX 1070 Ti".to_string(), 2432),
+            ("GeForce GTX 1070".to_string(), 1920),
+            ("GeForce GTX 1060 6GB".to_string(), 1280),
+            
+            ("GeForce GTX Titan X".to_string(), 3072),
+            ("GeForce GTX 980 Ti".to_string(), 2816),
+            ("GeForce GTX 980".to_string(), 2048),
+
+            ("GeForce GTX Titan Z".to_string(), 5760),
+            ("GeForce GTX Titan Black".to_string(), 2880),
         ].into_iter().collect();
 
         match env::var("BELLMAN_CUSTOM_GPU").and_then(|var| {
@@ -73,10 +81,10 @@ lazy_static::lazy_static! {
 }
 
 const DEFAULT_CORE_COUNT: usize = 2560;
-pub fn get_core_count(d: Device) -> GPUResult<usize> {
-    let name = d.name()?;
+pub fn get_core_count(d: &opencl::Device) -> usize {
+    let name = d.name();
     match CORE_COUNTS.get(&name[..]) {
-        Some(&cores) => Ok(cores),
+        Some(&cores) => cores,
         None => {
             warn!(
                 "Number of CUDA cores for your device ({}) is unknown! Best performance is \
@@ -85,14 +93,20 @@ pub fn get_core_count(d: Device) -> GPUResult<usize> {
                  https://lotu.sh/en+hardware-mining",
                 name
             );
-            Ok(DEFAULT_CORE_COUNT)
+            DEFAULT_CORE_COUNT
         }
     }
 }
 
-pub fn get_memory(d: Device) -> GPUResult<u64> {
-    match d.info(ocl::enums::DeviceInfo::GlobalMemSize)? {
-        ocl::enums::DeviceInfoResult::GlobalMemSize(sz) => Ok(sz),
-        _ => Err(GPUError::Simple("Cannot extract GPU memory!")),
+pub fn dump_device_list() {
+    for d in opencl::Device::all().unwrap() {
+        info!("Device: {:?}", d);
     }
+}
+
+#[cfg(feature = "gpu")]
+#[test]
+pub fn test_list_devices() {
+    let _ = env_logger::try_init();
+    dump_device_list();
 }

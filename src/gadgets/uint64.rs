@@ -751,5 +751,5 @@ mod test {
                 expected >>= 1;
             }
         }
-    }    
+    }
 }
